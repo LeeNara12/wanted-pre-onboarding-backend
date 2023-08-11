@@ -7,10 +7,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class ApiController {
 
-    @GetMapping("/")
-    @ResponseBody
+    @GetMapping("/board/list")
     public String main(){
-//        깃허브 연동 테스트
-        return "Hello World111";
+        return "boardList";
     }
 }
