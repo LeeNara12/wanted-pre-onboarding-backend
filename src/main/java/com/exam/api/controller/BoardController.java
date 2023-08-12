@@ -27,13 +27,19 @@ public class BoardController {
         return "";
     }
 
-    @GetMapping("board/list") //게시글 리스트 페이지로 이동
+    @GetMapping("/board/list")
     public String boardList(Model model){
-        model.addAttribute("list", boardService.list());
+        model.addAttribute("list", boardService.boardList());
 
         return "boardList";
     }
 
+
+    @GetMapping("/board/view") //게시물 상세보기 페이지(수정, 삭제)로 이동
+    public String boardView(Model model, Integer board_id){
+        model.addAttribute("board", boardService.view(board_id));
+        return "detailView";
+    }
 
 
 

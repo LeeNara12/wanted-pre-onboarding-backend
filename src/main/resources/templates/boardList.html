@@ -18,6 +18,11 @@
         box-sizing : border-box;
         margin-top: 10px;
     }
+
+    a{
+        text-decoration: none;
+    }
+
 </style>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
@@ -28,12 +33,16 @@
         <tr>
             <th style="width:20%" scope="col-2">글번호</th>
             <th scope="col">제목</th>
+            <th style="width:30%" scope="col" >작성자</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="board : ${list}">
-            <th th:text="${board.board_id}" scope="row">1</th>
-            <td th:text="${board.title}">제목이 들어갈 곳</td>
+        <tr th:each="list : ${list}">
+            <th th:text="${list.board_id}" scope="row">1</th> <!--localhost:8080/board/view?board_id=00-->
+            <td>
+                <a th:text="${list.title}" th:href="@{/board/view(board_id=${list.board_id})}"/>
+            </td>
+            <td th:text="${list.email}"></td>
         </tr>
         </tbody>
     </table>
