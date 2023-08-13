@@ -6,6 +6,8 @@ import com.exam.api.entity.UserInfo;
 import com.exam.api.repository.BoardRepository;
 import com.exam.api.repository.UserInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,14 +28,26 @@ public class BoardService {
 
 
     //게시글 리스트 정보 불러오기 (b.글번호, b.제목, u.작성자)
-    public List<UserJoinBoard> boardList(){
-        return boardRepository.getBoardListInfo();
+    public Page<UserJoinBoard> boardList(Pageable pageable){
+        return (Page<UserJoinBoard>) boardRepository.getBoardListInfo(pageable);
     }
 
 
-    //특정 게시글 불러오기
+    //특정 게시글 불러오기(상세보기)
     public Board view(Integer id){
         return boardRepository.findById(id).get();
     }
 
+    //특정 게시글 삭제하기
+    public void delete(Integer board_id){
+        boardRepository.deleteById(board_id);
+    }
+
+    //특정 게시글 수정하기
+    public void update(Board board){//title과 content 변경
+        Board updateBoard = boardRepository.findById(board.getBoard_id()).get();
+        updateBoard.setTitle(board.getTitle());
+        updateBoard.setContent(board.getContent());
+        boardRepository.save(updateBoard); //DB에 반영
+    }
 }
