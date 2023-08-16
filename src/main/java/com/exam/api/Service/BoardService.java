@@ -21,17 +21,32 @@ public class BoardService {
     @Autowired
     private UserInfoRepository userInfoRepository;
 
+
+
+    public void join(UserInfo userInfo){
+        userInfoRepository.save(userInfo);
+    }
+
+    public boolean emailExists(String email){
+        return userInfoRepository.existsByEmail(email);
+    }
+
+
+
+
+
+
+
+
     //글 작성 처리
     public void write(Board board){
         boardRepository.save(board);
     }
 
-
     //게시글 리스트 정보 불러오기 (b.글번호, b.제목, u.작성자)
     public Page<UserJoinBoard> boardList(Pageable pageable){
         return (Page<UserJoinBoard>) boardRepository.getBoardListInfo(pageable);
     }
-
 
     //특정 게시글 불러오기(상세보기)
     public Board view(Integer id){

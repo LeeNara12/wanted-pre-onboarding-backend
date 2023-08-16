@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface UserInfoRepository extends JpaRepository<UserInfo, Integer> {
-
+    boolean existsByEmail(String email);
 
 }

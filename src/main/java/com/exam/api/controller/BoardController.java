@@ -4,7 +4,7 @@ import com.exam.api.Service.BoardService;
 import com.exam.api.dto.UserJoinBoard;
 import com.exam.api.entity.Board;
 import com.exam.api.entity.UserInfo;
-import org.apache.catalina.User;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,17 +13,54 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
-@Controller
 
+@Controller
 public class BoardController {
 
     @Autowired //읽어와서 주입 DI(Defendency Injection) 외부에서 두 객체 간의 관계를 결정해주는 디자인 패턴
     private BoardService boardService;
+
+
+
+    @GetMapping("/join") //회원가입 폼으로 이동
+    public String joinForm(){
+        return "join";
+    }
+
+    @GetMapping("/checkEmailAvailability") //이메일 중복 여부 확인
+    public ResponseEntity<Map<String,Boolean>> checkEmailAvailability(@RequestParam String email){
+        Map<String, Boolean> response = new HashMap<>();
+        boolean isAvailable = !boardService.emailExists(email);//사용 가능 : true, 사용 불가능 : false
+        response.put("isAvailable", isAvailable);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/joinPro") //회원가입 처리
+    public String joinPro(@Valid @ModelAttribute UserInfo userInfo, Model model){
+
+        boardService.join(userInfo);
+        model.addAttribute("message","회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.");
+        model.addAttribute("url","/login");
+
+        return "alert";
+    }
+
+    @GetMapping("/login")
+    public String loginForm(){
+        return "login";
+    }
+
+
+
+
+
 
 
 
@@ -85,7 +122,7 @@ public class BoardController {
 
 
     @GetMapping("/board/delete") //게시물 삭제 여부 선택
-    public String boardDeleteChoice(@RequestParam Integer board_id, Model model){
+    public String boardDeleteConfirm(@RequestParam Integer board_id, Model model){
 
         model.addAttribute("message","게시글을 삭제하시겠습니까?");
         model.addAttribute("yesUrl","/board/deletePro/"+board_id);
