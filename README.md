@@ -25,7 +25,7 @@ CREATE TABLE `board` (
 
 
 ### 구현한 API의 동작을 촬영한 데모 영상 링크 : 동작 동영상 촬영 후 링크 올리기(window + g)
-링크 : ~~
+링크 : https://blog.naver.com/lnr2357/223182895701
 
 ### 구현 방법 및 이유에 대한 간략한 설명 : java springboot + thymeleaf + lombok + 왜 이것들을 사용했는지
 로그인 없이도 게시글을 볼 수는 있는 게시판을 구현하고자 하였습니다.
