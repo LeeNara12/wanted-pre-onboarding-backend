@@ -4,6 +4,10 @@ import com.exam.api.Service.BoardService;
 import com.exam.api.dto.UserJoinBoard;
 import com.exam.api.entity.Board;
 import com.exam.api.entity.UserInfo;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,6 +31,19 @@ public class BoardController {
     @Autowired //읽어와서 주입 DI(Defendency Injection) 외부에서 두 객체 간의 관계를 결정해주는 디자인 패턴
     private BoardService boardService;
 
+
+    @GetMapping("/")
+    public String index(HttpServletResponse response, @Valid @ModelAttribute UserInfo userInfo) {
+        Cookie cookie = new Cookie("yourCookieName", userInfo.getEmail());
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setValue("yourCookieValue"); // Set your actual cookie value
+        cookie.setPath("/myapp"); // Set your desired cookie path
+        response.addCookie(cookie);
+        response.setHeader("Set-Cookie", String.format("%s=%s; HttpOnly; Secure; SameSite=None; Path=/", cookie.getName(), cookie.getValue()));
+
+        return "index"; // Return the name of your HTML template
+    }
 
 
     @GetMapping("/join") //회원가입 폼으로 이동
@@ -52,11 +69,44 @@ public class BoardController {
         return "alert";
     }
 
-    @GetMapping("/login")
+    @GetMapping("/login")//로그인 페이지 이동
     public String loginForm(){
         return "login";
     }
 
+
+    @PostMapping("/loginPro") //로그인 처리
+    public String loginPro(@Valid @ModelAttribute UserInfo userInfo, Model model, HttpServletRequest request){
+
+        if(userInfo == null){
+
+            model.addAttribute("message","입력정보가 없습니다. 다시 로그인하세요.");
+            model.addAttribute("url","/login");
+
+        }else{ // UserInfo값이 있는 경우
+
+            boolean emailCheck = boardService.emailExists(userInfo.getEmail());
+            boolean pwdCheck = boardService.pwdExists(userInfo.getPwd());
+
+            if(emailCheck == true && pwdCheck == true){// 회원정보가 일치하는 경우
+                //세션 만들기 및 이메일 저장
+                HttpSession session = request.getSession(); //세션 생성
+                session.setAttribute("email", userInfo.getEmail());
+
+                model.addAttribute("message","로그인 되었습니다. 세션이 생성되었습니다.");
+                model.addAttribute("url","/board/list");
+
+
+            }else{//회원정보가 일치하지 않는 경우
+
+                model.addAttribute("message","이메일 및 비밀번호가 일치하지 않습니다.");
+                model.addAttribute("url","/login");
+
+            }
+        }
+
+        return "alert";
+    }
 
 
 
@@ -66,16 +116,34 @@ public class BoardController {
 
 
     @GetMapping("/board/write") //게시글 작성페이지로 이동
-    public String boardWriteForm(){
+    public String boardWriteForm(Model model, HttpServletRequest request){
+
+//        if(!request.isRequestedSessionIdValid()){//로그인 상태가 아니면
+//            model.addAttribute("message","로그인 후 게시글 작성이 가능합니다.");
+//            model.addAttribute("url","/login");
+//        }else{
+//        }
+
         return "boardWrite";
+
+//        return "alert";
     }
 
     @PostMapping("/board/writePro") //게시글 작성 처리
-    public String boardWritePro(Board board, Model model){
+    public String boardWritePro(Board board, Model model,HttpServletRequest request){
+
+        if(!request.isRequestedSessionIdValid()){//로그인 상태가 아니면
+            model.addAttribute("message","로그인 후 게시글 작성이 가능합니다.");
+            model.addAttribute("url","/login");
+
+        }
+
+        String email = (String) request.getAttribute("email");
+        UserJoinBoard userJoinBoard = boardService.getBoardEntity(email);
 
         UserInfo info = new UserInfo();
-        info.setUser_id(1);
-        board.setUserInfo(info);// 임시
+        info.setUser_id(userJoinBoard.getUser_id());
+        board.setUserInfo(info);
 
         //경고창 메시지 알고리즘
         if((board.getTitle() != null) && (!"".equals(board.getTitle()))

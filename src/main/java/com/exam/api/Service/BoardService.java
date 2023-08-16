@@ -23,14 +23,21 @@ public class BoardService {
 
 
 
-    public void join(UserInfo userInfo){
+    public void join(UserInfo userInfo){ //회원정보 저장
         userInfoRepository.save(userInfo);
     }
 
-    public boolean emailExists(String email){
+    public boolean emailExists(String email){ //이메일 존재 여부
         return userInfoRepository.existsByEmail(email);
     }
 
+    public boolean pwdExists(String pwd){ //이메일 존재 여부
+        return userInfoRepository.existsByPwd(pwd);
+    }
+
+    public UserJoinBoard getBoardEntity(String email){
+        return boardRepository.getBoardEntity(email);
+    }
 
 
 
@@ -45,7 +52,7 @@ public class BoardService {
 
     //게시글 리스트 정보 불러오기 (b.글번호, b.제목, u.작성자)
     public Page<UserJoinBoard> boardList(Pageable pageable){
-        return (Page<UserJoinBoard>) boardRepository.getBoardListInfo(pageable);
+        return boardRepository.getBoardListInfo(pageable);
     }
 
     //특정 게시글 불러오기(상세보기)

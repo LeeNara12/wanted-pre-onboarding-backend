@@ -27,6 +27,12 @@
         box-sizing : border-box;
         margin-top: 10%;
     }
+
+
+    a{
+        margin-left: 2%;
+        margin-right: 2%;
+    }
 </style>
 <script>
 
@@ -36,7 +42,7 @@
 
 <div class="layout">
     <h1>로그인</h1>
-    <form action="">
+    <form action="/loginPro" method="post">
         <div class="row mb-3 input1">
             <label for="inputEmail3" class="col-sm-2 col-form-label">Email</label>
             <div class="col-sm-10">
@@ -59,6 +65,10 @@
         </div>
         <div class="col text-center">
             <button type="submit" class="btn btn-primary btn-lg" style="width: 40%;">로그인</button>
+        </div>
+        <div style="display: flex; justify-content: center; margin: 3%;">
+            <a href="/join" >회원가입 페이지</a> |
+            <a href="/board/list">게시판 페이지</a>
         </div>
     </form>
 </div>

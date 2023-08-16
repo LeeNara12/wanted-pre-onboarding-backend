@@ -13,7 +13,9 @@ public class UserJoinBoard {
 
     private Integer board_id;
     private String title;
+    private Integer user_id;
     private String email;//작성자
+
 
 
 }
